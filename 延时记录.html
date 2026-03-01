@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>🌱 二年级延时 · 简洁增强版</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background: #f1f8e9;
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            padding: 0 1rem 2rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            max-width: 1000px;
+            width: 100%;
+        }
+        /* 卡片通用样式 */
+        .card {
+            background: white;
+            border-radius: 32px;
+            box-shadow: 0 12px 24px -8px rgba(0, 40, 0, 0.2);
+            padding: 1.8rem 1.5rem;
+            margin-bottom: 2rem;
+            border: 2px solid #c5e1a5;
+            transition: all 0.2s;
+        }
+        .header-card {
+            background: linear-gradient(135deg, #a5d6a7, #81c784);
+            border: none;
+            color: #1f3a1f;
+            position: sticky;
+            top: 10px;
+            z-index: 20;
+            box-shadow: 0 8px 20px rgba(30, 70, 30, 0.3);
+        }
+        h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.8rem;
+            flex-wrap: wrap;
+        }
+        h1 span {
+            background: #2e7d32;
+            color: white;
+            font-size: 1.2rem;
+            padding: 0.2rem 1rem;
+            border-radius: 40px;
+        }
+        /* 快捷工具栏 */
+        .quick-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+            background: #f0fff0d9;
+            backdrop-filter: blur(4px);
+            padding: 0.8rem 1.5rem;
+            border-radius: 60px;
+            margin-top: 10px;
+            border: 2px solid #5f9e6b;
+        }
+        .total-snapshot {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+        .total-snapshot .big-number {
+            background: #1e4a1e;
+            color: white;
+            padding: 0.3rem 1.2rem;
+            border-radius: 40px;
+            font-size: 1.8rem;
+            line-height: 1;
+        }
+        .today-btn {
+            background: #ffb74d;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #3d2b00;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 10px #b95b0040;
+            cursor: pointer;
+            transition: 0.1s;
+            border: 2px solid #ff9800;
+        }
+        .today-btn:hover {
+            background: #ffa726;
+            transform: translateY(-1px);
+        }
+
+        /* 记录表单 */
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.2rem;
+        }
+        .form-group {
+            flex: 1 1 180px;
+            min-width: 160px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #1f4f1f;
+            margin-bottom: 6px;
+        }
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #c8e6c9;
+            border-radius: 40px;
+            font-size: 1rem;
+            background: #f9fdf9;
+        }
+        .form-group textarea {
+            border-radius: 24px;
+            resize: vertical;
+            min-height: 70px;
+        }
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            margin-top: 16px;
+        }
+        .btn {
+            background: white;
+            border: 2px solid #81c784;
+            padding: 12px 28px;
+            border-radius: 60px;
+            font-weight: 600;
+            color: #1b5e20;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-primary {
+            background: #2e7d32;
+            border-color: #1b5e20;
+            color: white;
+        }
+        .btn-secondary {
+            background: #e8f5e9;
+        }
+        .edit-indicator {
+            background: #ffecb3;
+            padding: 6px 20px;
+            border-radius: 40px;
+            font-weight: 600;
+            color: #7d4f00;
+            border-left: 5px solid #ffb74d;
+        }
+        .hidden {
+            display: none;
+        }
+
+        /* 历史记录区 */
+        .records-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 1.5rem 0 1rem;
+        }
+        .badge {
+            background: #a5d6a7;
+            padding: 0.3rem 1rem;
+            border-radius: 40px;
+            font-weight: 600;
+        }
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: 28px;
+            background: white;
+            border: 2px solid #c5e1a5;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 500px;
+        }
+        th {
+            background: #a5d6a7;
+            color: #1c3c1c;
+            font-weight: 600;
+            padding: 1rem 0.8rem;
+            text-align: left;
+        }
+        td {
+            padding: 1rem 0.8rem;
+            border-bottom: 1px solid #dcedc8;
+            vertical-align: middle;
+        }
+        .remark-cell {
+            max-width: 200px;
+            white-space: normal;
+            word-break: break-word;
+        }
+        .action-cell {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .action-btn {
+            background: white;
+            border: 1px solid #b0d9b1;
+            border-radius: 30px;
+            padding: 6px 12px;
+            font-size: 0.9rem;
+            color: #1e4a1e;
+            cursor: pointer;
+        }
+        .action-btn.copy-btn {
+            border-color: #ffb74d;
+            background: #fff1d6;
+        }
+
+        /* 移动端卡片优化 */
+        @media screen and (max-width: 600px) {
+            .table-wrapper {
+                border-radius: 20px;
+                background: transparent;
+                border: none;
+                box-shadow: none;
+            }
+            table, thead, tbody, th, td, tr {
+                display: block;
+            }
+            thead {
+                display: none;  /* 隐藏表头 */
+            }
+            tr {
+                background: white;
+                border-radius: 28px;
+                padding: 1rem;
+                margin-bottom: 1.2rem;
+                border: 2px solid #c5e1a5;
+                box-shadow: 0 4px 12px #d0e2d0;
+            }
+            td {
+                display: flex;
+                align-items: flex-start;
+                padding: 0.5rem 0;
+                border-bottom: 1px dashed #c5e1a5;
+                border-bottom: none;
+                gap: 10px;
+            }
+            td:last-child {
+                border-bottom: none;
+            }
+            td:before {
+                content: attr(data-label);
+                font-weight: 700;
+                color: #1e4a1e;
+                min-width: 80px;
+                background: #e8f5e9;
+                padding: 4px 10px;
+                border-radius: 30px;
+                font-size: 0.9rem;
+                text-align: center;
+            }
+            .action-cell {
+                justify-content: flex-start;
+                padding-left: 0;
+            }
+            .action-cell:before {
+                content: "操作";
+                font-weight: 700;
+                color: #1e4a1e;
+                background: #e8f5e9;
+                padding: 4px 10px;
+                border-radius: 30px;
+                min-width: 80px;
+                text-align: center;
+            }
+            .action-cell .action-btn {
+                margin-left: 0;
+            }
+            .remark-cell:before {
+                content: "请假人";
+            }
+        }
+
+        .footer-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+        .hint {
+            color: #3d5e3d;
+            font-size: 0.9rem;
+            background: #e4f0e4;
+            padding: 0.3rem 1rem;
+            border-radius: 30px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- 头部悬浮快捷栏 -->
+    <div class="card header-card" style="padding: 1.2rem 1.5rem;">
+        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+            <h1 style="margin-bottom: 0;">📘 二年级延时</h1>
+            <div class="quick-bar">
+                <div class="total-snapshot">
+                    <span>📊 累计</span>
+                    <span class="big-number" id="quickTotal">0</span>
+                </div>
+                <button class="today-btn" id="quickTodayBtn">📌 ＋今日记录</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 记录输入卡片（简洁版） -->
+    <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 16px;">
+            <h2 style="color: #1f4a1f;">✏️ 记录今天延时</h2>
+            <div id="editStatus" class="edit-indicator hidden">📝 正在编辑记录</div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>📅 日期</label>
+                <input type="date" id="recordDate" required>
+            </div>
+            <div class="form-group">
+                <label>🔢 节数</label>
+                <input type="number" id="sections" min="0" value="0" step="1">
+            </div>
+        </div>
+
+        <div class="form-group" style="width:100%;">
+            <label>👥 请假学生 (可填写多人，用逗号分开)</label>
+            <textarea id="remark" placeholder="例如：王小明, 李小花, 赵小雷" rows="2"></textarea>
+        </div>
+
+        <div class="button-group">
+            <button class="btn btn-primary" id="saveBtn">💾 保存记录</button>
+            <button class="btn btn-secondary" id="todayBtn">📅 今天</button>
+            <button class="btn btn-secondary" id="resetFormBtn">🔄 清空表单</button>
+        </div>
+        <div class="hint" style="margin-top: 12px;">⭐ 同一天只保留一条记录，新保存会覆盖。支持复制上一天记录。</div>
+    </div>
+
+    <!-- 历史记录列表（带复制按钮） -->
+    <div class="records-title">
+        <h2>📋 历史记录</h2>
+        <span class="badge" id="recordCount">0 天</span>
+    </div>
+
+    <div class="table-wrapper">
+        <table id="recordsTable">
+            <thead>
+                <tr>
+                    <th>日期</th>
+                    <th>节数</th>
+                    <th>请假人</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <tr class="empty-row"><td colspan="4">还没有记录，添加一条吧 🌱</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="footer-actions">
+        <button class="btn btn-warning" id="clearAllBtn">🧹 清空全部记录</button>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // ==================== 存储keys ====================
+        const RECORDS_KEY = 'delayServiceRecords_grade2';
+
+        // ==================== DOM元素 ====================
+        const quickTotal = document.getElementById('quickTotal');
+        const quickTodayBtn = document.getElementById('quickTodayBtn');
+        const recordDate = document.getElementById('recordDate');
+        const sections = document.getElementById('sections');
+        const remark = document.getElementById('remark');
+        const saveBtn = document.getElementById('saveBtn');
+        const todayBtn = document.getElementById('todayBtn');
+        const resetFormBtn = document.getElementById('resetFormBtn');
+        const clearAllBtn = document.getElementById('clearAllBtn');
+        const editStatus = document.getElementById('editStatus');
+        const tableBody = document.getElementById('tableBody');
+        const recordCountSpan = document.getElementById('recordCount');
+
+        // 全局编辑状态
+        let currentEditDate = null;   // 正在编辑的原日期
+
+        // ==================== 记录操作 ====================
+        function loadRecords() {
+            const stored = localStorage.getItem(RECORDS_KEY);
+            return stored ? JSON.parse(stored) : [];
+        }
+
+        function saveRecords(records) {
+            localStorage.setItem(RECORDS_KEY, JSON.stringify(records));
+        }
+
+        // 转义（防止XSS）
+        function escapeHtml(unsafe) {
+            if (!unsafe) return unsafe;
+            return unsafe.replace(/[&<>"]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                if (m === '"') return '&quot;';
+                return m;
+            });
+        }
+
+        // 刷新表格、总数、快捷栏总数
+        function renderRecords() {
+            const records = loadRecords();
+            const sorted = [...records].sort((a,b) => (a.date > b.date ? -1 : 1));
+
+            // 总节数
+            const total = records.reduce((acc, cur) => acc + (Number(cur.sections) || 0), 0);
+            quickTotal.textContent = total;
+
+            recordCountSpan.textContent = records.length + ' 天';
+
+            if (records.length === 0) {
+                tableBody.innerHTML = `<tr class="empty-row"><td colspan="4">还没有记录，添加一条吧 🌱</td></tr>`;
+                return;
+            }
+
+            let html = '';
+            sorted.forEach(record => {
+                const date = record.date || '未知';
+                const sec = record.sections ?? 0;
+                const remarkText = record.remark ? record.remark.trim() : '—';
+                html += `<tr>
+                    <td data-label="日期"><strong>${date}</strong></td>
+                    <td data-label="节数">${sec} 节</td>
+                    <td data-label="请假人" class="remark-cell">${escapeHtml(remarkText)}</td>
+                    <td data-label="操作" class="action-cell">
+                        <button class="action-btn edit-btn" data-date="${record.date}">✏️ 编辑</button>
+                        <button class="action-btn copy-btn" data-date="${record.date}">📋 复制</button>
+                        <button class="action-btn delete-btn" data-date="${record.date}">🗑️ 删除</button>
+                    </td>
+                </tr>`;
+            });
+            tableBody.innerHTML = html;
+
+            // 绑定编辑、复制、删除事件
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const date = e.target.dataset.date;
+                    editRecord(date);
+                });
+            });
+            document.querySelectorAll('.copy-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const date = e.target.dataset.date;
+                    copyRecord(date);
+                });
+            });
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const date = e.target.dataset.date;
+                    deleteRecord(date);
+                });
+            });
+        }
+
+        // 重置表单（清除编辑状态）
+        function resetForm() {
+            recordDate.value = '';
+            sections.value = '0';
+            remark.value = '';
+            currentEditDate = null;
+            editStatus.classList.add('hidden');
+        }
+
+        // 填充表单（用于编辑或复制）
+        function fillForm(date, sec, remarkText) {
+            recordDate.value = date || '';
+            sections.value = sec ?? 0;
+            remark.value = remarkText || '';
+        }
+
+        // 编辑记录
+        function editRecord(date) {
+            const records = loadRecords();
+            const rec = records.find(r => r.date === date);
+            if (!rec) return;
+            fillForm(rec.date, rec.sections, rec.remark);
+            currentEditDate = rec.date;
+            editStatus.classList.remove('hidden');
+            document.querySelector('.card').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // 复制记录（填充表单但不改变编辑状态，日期清空）
+        function copyRecord(date) {
+            const records = loadRecords();
+            const rec = records.find(r => r.date === date);
+            if (!rec) return;
+            fillForm('', rec.sections, rec.remark);  // 日期留空
+            currentEditDate = null;   // 退出编辑状态
+            editStatus.classList.add('hidden');
+            document.querySelector('.card').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // 删除记录
+        function deleteRecord(date) {
+            if (!confirm(`确定删除 ${date} 的记录？`)) return;
+            let records = loadRecords();
+            records = records.filter(r => r.date !== date);
+            saveRecords(records);
+            if (currentEditDate === date) resetForm();
+            renderRecords();
+        }
+
+        // 保存记录（新增或更新）
+        function handleSave() {
+            const newDate = recordDate.value.trim();
+            if (!newDate) {
+                alert('请选择日期');
+                return;
+            }
+            const sec = parseInt(sections.value, 10);
+            if (isNaN(sec) || sec < 0) {
+                alert('节数必须为0或正整数');
+                return;
+            }
+
+            const remarkText = remark.value.trim();
+
+            let records = loadRecords();
+
+            // 如果正在编辑，先移除原记录
+            if (currentEditDate) {
+                records = records.filter(r => r.date !== currentEditDate);
+            }
+            // 确保日期唯一
+            records = records.filter(r => r.date !== newDate);
+
+            records.push({ date: newDate, sections: sec, remark: remarkText });
+            saveRecords(records);
+            resetForm();
+            renderRecords();
+        }
+
+        // 设置今天日期
+        function setTodayDate() {
+            const today = new Date();
+            const y = today.getFullYear();
+            const m = String(today.getMonth()+1).padStart(2,'0');
+            const d = String(today.getDate()).padStart(2,'0');
+            recordDate.value = `${y}-${m}-${d}`;
+        }
+
+        // 清空全部
+        function clearAllRecords() {
+            if (confirm('⚠️ 清空所有延时记录？不可撤销')) {
+                localStorage.removeItem(RECORDS_KEY);
+                resetForm();
+                renderRecords();
+            }
+        }
+
+        // ==================== 事件绑定 ====================
+        saveBtn.addEventListener('click', handleSave);
+        todayBtn.addEventListener('click', setTodayDate);
+        quickTodayBtn.addEventListener('click', () => {
+            setTodayDate();
+            document.querySelector('.card').scrollIntoView({ behavior: 'smooth' });
+        });
+        resetFormBtn.addEventListener('click', resetForm);
+        clearAllBtn.addEventListener('click', clearAllRecords);
+
+        // 启动
+        renderRecords();
+    })();
+</script>
+</body>
+</html>
